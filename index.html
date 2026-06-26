@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Closet - AI Smart Wardrobe</title>
+    <meta name="description" content="Manage your closet pieces, log daily outfits, access the AI stylist, and get buying insights to build your perfect wardrobe.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container mobile-layout">
+        
+        
+        <header class="mobile-header">
+            <h1 id="header-title" class="header-serif">Closet</h1>
+            <div class="header-actions">
+                <div class="pieces-badge" id="pieces-badge-container">
+                    <span id="pieces-count">0</span> pieces
+                </div>
+                <button type="button" class="settings-btn" aria-label="Settings" onclick="toggleSettingsModal()">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        
+        <main class="mobile-content">
+            
+            
+            <section id="tab-content-closet" class="tab-section active">
+                
+                <div class="closet-filters" id="closet-filters" style="display: none;">
+                    <select id="filter-category" onchange="filterCloset()">
+                        <option value="all">All Categories</option>
+                        <option value="top">Tops</option>
+                        <option value="bottom">Bottoms</option>
+                        <option value="shirt">Shirts</option>
+                        <option value="tshirt">T-shirts</option>
+                        <option value="sweater">Sweaters</option>
+                        <option value="pants">Pants</option>
+                        <option value="trouser">Trousers</option>
+                        <option value="shorts">Shorts</option>
+                        <option value="skirt">Skirts</option>
+                    </select>
+                    <select id="filter-color" onchange="filterCloset()">
+                        <option value="all">All Colors</option>
+                        <option value="Black">Black</option>
+                        <option value="White">White</option>
+                        <option value="Grey">Grey</option>
+                        <option value="Navy">Navy</option>
+                        <option value="Blue">Blue</option>
+                        <option value="Red">Red</option>
+                        <option value="Green">Green</option>
+                        <option value="Beige">Beige</option>
+                        <option value="Brown">Brown</option>
+                        <option value="Yellow">Yellow</option>
+                    </select>
+                </div>
+
+                
+                <div class="empty-closet-state" id="closet-empty-state">
+                    <h2 class="empty-title-serif">Nothing here yet</h2>
+                    <p class="empty-subtitle">Photograph your clothes and let AI catalogue every piece for you.</p>
+                    <button class="btn-cream-action" onclick="switchTab('add')">Add your first piece</button>
+                </div>
+
+                
+                <div class="closet-grid" id="clothes-grid" style="display: none;">
+                    
+                </div>
+            </section>
+
+            
+            <section id="tab-content-log" class="tab-section">
+                <div class="section-card">
+                    <h2 class="card-title-serif">Log Daily Outfit</h2>
+                    <p class="card-subtitle">Log what clothes you wore on a specific date to track your usage patterns.</p>
+                    
+                    <form id="log-outfit-form" onsubmit="saveLogEntry(event)" class="log-form">
+                        <div class="input-field">
+                            <label for="log-date">Select Date</label>
+                            <input type="date" id="log-date" required>
+                        </div>
+                        
+                        <div class="log-selectors-row">
+                            <div class="input-field">
+                                <label for="log-top-select">Select Top</label>
+                                <select id="log-top-select" required>
+                                    <option value="" disabled selected>Choose top...</option>
+                                    
+                                </select>
+                            </div>
+                            <div class="input-field">
+                                <label for="log-bottom-select">Select Bottom</label>
+                                <select id="log-bottom-select" required>
+                                    <option value="" disabled selected>Choose bottom...</option>
+                                    
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-cream-action full-width-btn">Save Log Entry</button>
+                    </form>
+                </div>
+
+                
+                <div class="timeline-header">
+                    <h3 class="header-serif">Wearing History</h3>
+                </div>
+
+                
+                <div class="empty-state" id="log-empty-state">
+                    <span class="empty-icon">📅</span>
+                    <h3>No logged days yet</h3>
+                    <p>Track your outfit cycles by logging items above.</p>
+                </div>
+
+                
+                <div class="timeline-list" id="timeline-list" style="display: none;">
+                    
+                </div>
+            </section>
+
+            
+            <section id="tab-content-add" class="tab-section">
+                
+                <div class="camera-card">
+                    <div class="camera-viewport-wrapper">
+                        <video id="camera-feed" autoplay playsinline muted></video>
+                        <canvas id="snapshot-canvas" style="display: none;"></canvas>
+                        <div class="camera-overlay" id="camera-overlay">
+                            <div class="overlay-text">Camera Starting...</div>
+                        </div>
+                        
+                        <div class="upload-preview-container" id="upload-preview-container" style="display: none;">
+                            <img id="uploaded-image-preview" src="" alt="Uploaded item preview">
+                            <button type="button" class="remove-preview-btn" onclick="resetUploadPreview()">✕ Clear Image</button>
+                        </div>
+                    </div>
+
+                    <div class="camera-controls">
+                        <button type="button" class="btn-cream-action" onclick="capturePhoto()">
+                            ⚡ Capture Garment
+                        </button>
+                        
+                        <div class="fallback-upload">
+                            <p class="divider-text"><span>OR</span></p>
+                            <label for="file-upload-input" class="btn-cream-action secondary-cream-btn">
+                                📁 Upload Photo
+                            </label>
+                            <input type="file" id="file-upload-input" accept="image/*" onchange="handleFileUpload(event)" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="alert-banner" id="onboarding-banner">
+                    <span class="alert-icon">⚠️</span>
+                    <p class="alert-text">Minimum <strong>2 clothes</strong> (1 top, 1 bottom) are required to enable AI styling suggestions.</p>
+                </div>
+            </section>
+
+            
+            <section id="tab-content-stylist" class="tab-section">
+                <div class="stylist-options-card">
+                    <h2 class="card-title-serif">AI Stylist Consultant</h2>
+                    <p class="card-subtitle">Select when you want to wear your outfit, and the stylist model will recommend matching options.</p>
+                    
+                    <div class="style-preferences-group">
+                        
+                        <div class="pref-selector">
+                            <span class="pref-label">Occasion & Style</span>
+                            <div class="pref-pills" id="occasion-pills">
+                                <button class="pref-pill active" data-value="Casual" onclick="setPref('occasion', 'Casual', this)">Casual</button>
+                                <button class="pref-pill" data-value="Work" onclick="setPref('occasion', 'Work', this)">Business</button>
+                                <button class="pref-pill" data-value="Formal" onclick="setPref('occasion', 'Formal', this)">Formal</button>
+                                <button class="pref-pill" data-value="Party" onclick="setPref('occasion', 'Party', this)">Party</button>
+                                <button class="pref-pill" data-value="Sport" onclick="setPref('occasion', 'Sport', this)">Sports</button>
+                            </div>
+                        </div>
+
+                        
+                        <div class="pref-selector">
+                            <span class="pref-label">Weather Setting</span>
+                            <div class="pref-pills" id="weather-pills">
+                                <button class="pref-pill active" data-value="Mild" onclick="setPref('weather', 'Mild', this)">☀️ Mild / Warm</button>
+                                <button class="pref-pill" data-value="Cold" onclick="setPref('weather', 'Cold', this)">🌧️ Cold / Rainy</button>
+                                <button class="pref-pill" data-value="Hot" onclick="setPref('weather', 'Hot', this)">🔥 Hot / Humid</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-cream-action full-width-btn" onclick="generateOutfits()">
+                        🔮 Coordinate Matches
+                    </button>
+                </div>
+
+                
+                <div class="match-results-container">
+                    <div class="empty-state" id="match-empty-state">
+                        <span class="empty-icon">✨</span>
+                        <h3>Style Coordinates</h3>
+                        <p>Click "Coordinate Matches" to view outfit recommendations based on your selected conditions.</p>
+                    </div>
+
+                    
+                    <div class="outfits-list" id="outfits-list" style="display: none;">
+                        
+                    </div>
+                </div>
+            </section>
+
+            
+            <section id="tab-content-insights" class="tab-section">
+                
+                <div class="insights-summary-card">
+                    <h2 class="card-title-serif">Wardrobe Insights</h2>
+                    <p class="card-subtitle">AI analysis of your clothing composition and structural gaps.</p>
+                    
+                    
+                    <div class="wardrobe-stats-bars">
+                        <div class="stat-bar-item">
+                            <div class="stat-bar-labels">
+                                <span>Tops Ratio</span>
+                                <span id="insights-tops-percent">0%</span>
+                            </div>
+                            <div class="stat-bar-track">
+                                <div class="stat-bar-fill" id="insights-tops-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar-item">
+                            <div class="stat-bar-labels">
+                                <span>Bottoms Ratio</span>
+                                <span id="insights-bottoms-percent">0%</span>
+                            </div>
+                            <div class="stat-bar-track">
+                                <div class="stat-bar-fill" id="insights-bottoms-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="shopping-recommendations">
+                    <h3 class="header-serif">AI Shopping Guide</h3>
+                    <p class="recommendations-meta">To unlock more outfit permutations, the stylist recommends buying:</p>
+                    
+                    <div class="insights-list-grid" id="insights-suggestions-container">
+                        
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        
+        <nav class="bottom-navigation" id="bottom-tab-nav" aria-label="Bottom Navigation">
+            <button class="nav-tab-btn active" id="btn-tab-closet" onclick="switchTab('closet')">
+                <div class="nav-icon-wrapper">
+                    
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 7c.7-1 1.5-2 1.5-3a1.5 1.5 0 0 0-3 0c0 .5.3 1 .8 1.5L12 7zm0 0L3 13.5a1.5 1.5 0 0 0 .8 2.8h16.4a1.5 1.5 0 0 0 .8-2.8L12 7z"/>
+                    </svg>
+                </div>
+                <span class="nav-label">Closet</span>
+            </button>
+            
+            <button class="nav-tab-btn" id="btn-tab-log" onclick="switchTab('log')">
+                <div class="nav-icon-wrapper">
+                    
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                        <path d="M9 16l2 2 4-4"/>
+                    </svg>
+                </div>
+                <span class="nav-label">Log</span>
+            </button>
+            
+            <button class="nav-tab-btn" id="btn-tab-add" onclick="switchTab('add')">
+                <div class="nav-icon-wrapper">
+                    
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                </div>
+                <span class="nav-label">Add</span>
+            </button>
+            
+            <button class="nav-tab-btn" id="btn-tab-stylist" onclick="switchTab('stylist')">
+                <div class="nav-icon-wrapper">
+                    
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/>
+                    </svg>
+                </div>
+                <span class="nav-label">Stylist</span>
+            </button>
+            
+            <button class="nav-tab-btn" id="btn-tab-insights" onclick="switchTab('insights')">
+                <div class="nav-icon-wrapper">
+                    
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"/>
+                        <line x1="12" y1="20" x2="12" y2="4"/>
+                        <line x1="6" y1="20" x2="6" y2="14"/>
+                    </svg>
+                </div>
+                <span class="nav-label">Insights</span>
+            </button>
+        </nav>
+    </div>
+
+    
+    <div class="modal-overlay" id="metadata-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-card">
+            <header class="modal-header">
+                <h2 id="modal-title" class="header-serif">Identify Garment</h2>
+                <button type="button" class="close-modal-btn" onclick="closeModal()" aria-label="Close modal">✕</button>
+            </header>
+
+            <form id="metadata-form" onsubmit="saveGarment(event)">
+                <div class="modal-body">
+                    
+                    <div class="modal-image-preview">
+                        <img id="modal-image-view" src="" alt="Captured Garment Preview">
+                    </div>
+
+                    
+                    <div class="modal-fields">
+                        <div class="input-field">
+                            <label for="garment-name">Garment Name</label>
+                            <input type="text" id="garment-name" placeholder="e.g., Slim Black Jeans, Blue Tee" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label for="garment-category">Category</label>
+                            <select id="garment-category" required onchange="handleCategoryChange()">
+                                <option value="" disabled selected>Select category...</option>
+                                <optgroup label="Tops (Upper Body)">
+                                    <option value="shirt">Shirt</option>
+                                    <option value="tshirt">T-shirt</option>
+                                    <option value="sweater">Sweater</option>
+                                </optgroup>
+                                <optgroup label="Bottoms (Lower Body)">
+                                    <option value="pants">Pants</option>
+                                    <option value="trouser">Trouser</option>
+                                    <option value="shorts">Shorts</option>
+                                    <option value="skirt">Skirt</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        
+                        <div class="input-field">
+                            <label>Primary Color</label>
+                            <div class="color-swatches" id="color-swatches-container">
+                                
+                            </div>
+                            <input type="hidden" id="garment-color" value="" required>
+                        </div>
+
+                        <div class="input-field">
+                            <label for="garment-pattern">Pattern</label>
+                            <select id="garment-pattern" required>
+                                <option value="Solid" selected>Solid (Plain)</option>
+                                <option value="Striped">Striped</option>
+                                <option value="Checkered">Checkered</option>
+                                <option value="Floral">Floral / Patterned</option>
+                                <option value="Graphic">Graphic Print</option>
+                            </select>
+                        </div>
+
+                        <div class="input-field">
+                            <label for="garment-occasion">Primary Occasion</label>
+                            <select id="garment-occasion" required>
+                                <option value="Casual" selected>Casual</option>
+                                <option value="Formal">Formal</option>
+                                <option value="Work">Business / Work</option>
+                                <option value="Sport">Sportswear</option>
+                                <option value="Party">Party</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn-cream-action secondary-cream-btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-cream-action">Save to Closet</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    
+    <div class="modal-overlay" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="modal-card mini-modal">
+            <header class="modal-header">
+                <h2 id="settings-title" class="header-serif">Closet Utilities</h2>
+                <button type="button" class="close-modal-btn" onclick="toggleSettingsModal()">✕</button>
+            </header>
+            <div class="modal-body settings-body">
+                <p>Use these helper functions to test or reset the app:</p>
+                <div class="settings-actions">
+                    <button type="button" class="btn-cream-action secondary-cream-btn" onclick="triggerLoadDemoData()">
+                        📁 Re-load Demo Clothes
+                    </button>
+                    <button type="button" class="btn-cream-action danger-btn" onclick="triggerClearCloset()">
+                        🗑️ Reset / Clear Closet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="app.js"></script>
+</body>
+</html>
