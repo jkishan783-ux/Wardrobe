@@ -1,8 +1,8 @@
-const CACHE_NAME = 'closet-cache-v2';
+const CACHE_NAME = 'closet-cache-v3';
 const ASSETS = [
   './',
   './index.html',
-  './styles.css?v=2',
+  './styles.css?v=3',
   './app.js',
   './manifest.json',
   './icon.svg'
