@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#171514" />
+      <stop offset="100%" stop-color="#0c0a09" />
+    </linearGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eae3d2" />
+      <stop offset="100%" stop-color="#b5a98f" />
+    </linearGradient>
+    <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#eae3d2" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg-grad)" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+  <g filter="url(#glow)" transform="translate(0, 20)">
+    <path d="M256 120 C275 120 290 135 290 155 C290 170 278 180 268 188 L256 198 L256 220" fill="none" stroke="url(#gold-grad)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M256 220 L128 320 C110 334 120 350 144 350 L368 350 C392 350 402 334 384 320 L256 220 Z" fill="none" stroke="url(#gold-grad)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="256" cy="285" r="16" fill="url(#gold-grad)" />
+  </g>
+</svg>

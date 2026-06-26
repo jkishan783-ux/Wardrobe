@@ -10,6 +10,8 @@ let activeStream = null;
 let currentPhotoData = null;
 let selectedColorName = null;
 
+let cameraFacingMode = 'user'; // 'user' (front) or 'environment' (back)
+let deferredInstallPrompt = null;
 
 let stylistOccasion = 'Casual';
 let stylistWeather = 'Mild';
@@ -47,6 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     updateUIState();
     
+    // PWA & Service Worker Registration
+    registerServiceWorker();
+    initPWAInstall();
     
     switchTab('closet');
 });
@@ -106,6 +111,7 @@ function switchTab(tabId) {
 async function initCamera() {
     const video = document.getElementById('camera-feed');
     const overlay = document.getElementById('camera-overlay');
+    const switchBtn = document.getElementById('switch-camera-btn');
     
     if (document.getElementById('upload-preview-container').style.display === 'block') {
         return;
@@ -119,8 +125,15 @@ async function initCamera() {
             stopCamera();
         }
 
+        // Configure video elements based on facingMode
+        if (cameraFacingMode === 'user') {
+            video.classList.add('mirror');
+        } else {
+            video.classList.remove('mirror');
+        }
+
         const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'user', width: 640, height: 640 },
+            video: { facingMode: cameraFacingMode, width: 640, height: 640 },
             audio: false
         });
         
@@ -128,14 +141,16 @@ async function initCamera() {
         video.srcObject = stream;
         video.onloadedmetadata = () => {
             overlay.style.display = 'none';
+            if (switchBtn) switchBtn.style.display = 'flex';
         };
     } catch (e) {
         console.warn('Camera failed to start, fallback mode active:', e);
         overlay.style.display = 'flex';
         overlay.querySelector('.overlay-text').innerHTML = `
             📷 Camera blocked or unavailable.<br>
-            Please use <strong>Upload Photo</strong>.
+            Please use <strong>Upload Photo</strong> or <strong>System Camera</strong>.
         `;
+        if (switchBtn) switchBtn.style.display = 'none';
     }
 }
 
@@ -145,6 +160,13 @@ function stopCamera() {
         activeStream = null;
         document.getElementById('camera-feed').srcObject = null;
     }
+    const switchBtn = document.getElementById('switch-camera-btn');
+    if (switchBtn) switchBtn.style.display = 'none';
+}
+
+function toggleCameraFacing() {
+    cameraFacingMode = (cameraFacingMode === 'user') ? 'environment' : 'user';
+    initCamera();
 }
 
 function capturePhoto() {
@@ -166,9 +188,11 @@ function capturePhoto() {
         canvas.width = video.videoWidth || 480;
         canvas.height = video.videoHeight || 480;
         
-        
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
+        // Mirror snapshot only for user-facing camera
+        if (cameraFacingMode === 'user') {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         
@@ -994,3 +1018,107 @@ function formatDateString(dateStr) {
         timeZone: 'UTC'
     });
 }
+
+/* Progressive Web App (PWA) helpers */
+
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registered successfully:', reg.scope))
+            .catch(err => console.warn('Service Worker registration failed:', err));
+    }
+}
+
+function initPWAInstall() {
+    const statusText = document.getElementById('pwa-status-text');
+    const placeholder = document.getElementById('pwa-action-placeholder');
+
+    if (!statusText || !placeholder) return;
+
+    // Check if already running in standalone mode
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    if (isStandalone) {
+        statusText.innerText = "Closet is installed and configured for offline access.";
+        placeholder.innerHTML = `
+            <div class="pwa-installed-badge">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Running Standalone App
+            </div>
+        `;
+        return;
+    }
+
+    // Check platform
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    if (isIOS) {
+        statusText.innerText = "Install Closet on your iPhone for offline styling access.";
+        placeholder.innerHTML = `
+            <button type="button" class="btn-cream-action pwa-btn" onclick="toggleIosModal(true)">
+                📥 Add to Home Screen
+            </button>
+        `;
+    } else {
+        // Standard Android/Chrome desktop PWA installation
+        statusText.innerText = "Download Closet on your device to enable offline execution and storage.";
+        if (deferredInstallPrompt) {
+            showInstallButton();
+        } else {
+            placeholder.innerHTML = `<p class="pwa-instruction-text" style="opacity: 0.6; font-style: italic; margin-top: 4px;">Install option will become active once the browser confirms installation capabilities.</p>`;
+        }
+    }
+}
+
+function showInstallButton() {
+    const placeholder = document.getElementById('pwa-action-placeholder');
+    if (!placeholder) return;
+    placeholder.innerHTML = `
+        <button type="button" class="btn-cream-action pwa-btn" onclick="triggerPwaInstall()">
+            📥 Download App
+        </button>
+    `;
+}
+
+function triggerPwaInstall() {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+        } else {
+            console.log('User dismissed the install prompt');
+        }
+        deferredInstallPrompt = null;
+        initPWAInstall();
+    });
+}
+
+function toggleIosModal(show) {
+    const modal = document.getElementById('ios-install-modal');
+    if (modal) {
+        if (show) {
+            modal.classList.add('open');
+        } else {
+            modal.classList.remove('open');
+        }
+    }
+}
+
+// Listen for beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    initPWAInstall();
+    showInstallButton();
+});
+
+// Listen for appinstalled event
+window.addEventListener('appinstalled', () => {
+    console.log('Closet app was successfully installed');
+    deferredInstallPrompt = null;
+    initPWAInstall();
+});
+

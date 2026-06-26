@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Closet - AI Smart Wardrobe</title>
     <meta name="description" content="Manage your closet pieces, log daily outfits, access the AI stylist, and get buying insights to build your perfect wardrobe.">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0c0a09">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Closet">
+    <link rel="apple-touch-icon" href="icon.svg">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -134,7 +142,12 @@
                 
                 <div class="camera-card">
                     <div class="camera-viewport-wrapper">
-                        <video id="camera-feed" autoplay playsinline muted></video>
+                        <video id="camera-feed" class="mirror" autoplay playsinline muted></video>
+                        <button type="button" id="switch-camera-btn" class="switch-camera-btn" onclick="toggleCameraFacing()" aria-label="Switch Camera" style="display: none;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                            </svg>
+                        </button>
                         <canvas id="snapshot-canvas" style="display: none;"></canvas>
                         <div class="camera-overlay" id="camera-overlay">
                             <div class="overlay-text">Camera Starting...</div>
@@ -153,10 +166,16 @@
                         
                         <div class="fallback-upload">
                             <p class="divider-text"><span>OR</span></p>
-                            <label for="file-upload-input" class="btn-cream-action secondary-cream-btn">
-                                📁 Upload Photo
-                            </label>
+                            <div class="fallback-buttons-row">
+                                <button type="button" class="btn-cream-action secondary-cream-btn fallback-btn" onclick="document.getElementById('system-camera-input').click()">
+                                    📸 System Camera
+                                </button>
+                                <label for="file-upload-input" class="btn-cream-action secondary-cream-btn fallback-btn" style="margin: 0; cursor: pointer;">
+                                    📁 Gallery Upload
+                                </label>
+                            </div>
                             <input type="file" id="file-upload-input" accept="image/*" onchange="handleFileUpload(event)" style="display: none;">
+                            <input type="file" id="system-camera-input" accept="image/*" capture="environment" onchange="handleFileUpload(event)" style="display: none;">
                         </div>
                     </div>
                 </div>
@@ -420,11 +439,40 @@
                         🗑️ Reset / Clear Closet
                     </button>
                 </div>
+                
+                <div class="pwa-section-title">App Installation</div>
+                <div id="pwa-install-section">
+                    <div class="pwa-instruction-card">
+                        <span class="pwa-instruction-title">Offline App Installer</span>
+                        <p class="pwa-instruction-text" id="pwa-status-text">Detecting platform capabilities...</p>
+                        <div id="pwa-action-placeholder"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    
+    <!-- iOS Share Sheet Guidance Modal -->
+    <div class="modal-overlay" id="ios-install-modal" role="dialog" aria-modal="true" aria-labelledby="ios-modal-title">
+        <div class="modal-card mini-modal">
+            <header class="modal-header">
+                <h2 id="ios-modal-title" class="header-serif">Add to Home Screen</h2>
+                <button type="button" class="close-modal-btn" onclick="toggleIosModal(false)">✕</button>
+            </header>
+            <div class="modal-body">
+                <p class="card-subtitle" style="margin-bottom: 12px;">Access Closet directly from your iPhone home screen and run it offline:</p>
+                <ol style="margin-left: 20px; font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 10px; padding-left: 4px;">
+                    <li>Tap the <strong>Share</strong> button <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="display: inline; vertical-align: middle; margin: 0 4px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg> in the browser bar.</li>
+                    <li>Scroll down and tap <strong>Add to Home Screen</strong> <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="display: inline; vertical-align: middle; margin: 0 4px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>.</li>
+                    <li>Confirm the name and tap <strong>Add</strong> in the top-right corner.</li>
+                </ol>
+            </div>
+            <footer class="modal-footer">
+                <button type="button" class="btn-cream-action" onclick="toggleIosModal(false)">Got It</button>
+            </footer>
+        </div>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
