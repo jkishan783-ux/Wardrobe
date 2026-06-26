@@ -1041,6 +1041,7 @@ select optgroup {
     flex-direction: column;
     flex-grow: 1;
     overflow: hidden;
+    min-height: 0;
 }
 
 .modal-image-preview {
