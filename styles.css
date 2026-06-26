@@ -436,6 +436,12 @@ body {
     transition: var(--transition-spring);
 }
 
+select option,
+select optgroup {
+    background-color: var(--base-card);
+    color: var(--text-primary);
+}
+
 .input-field input:focus,
 .input-field select:focus {
     border-color: var(--accent-cream);
@@ -1026,6 +1032,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    flex: 1;
+    min-height: 0;
 }
 
 .modal-card form {
@@ -1037,7 +1045,7 @@ body {
 
 .modal-image-preview {
     width: 100%;
-    height: 160px;
+    height: 120px;
     border-radius: var(--radius-md);
     background: #000;
     overflow: hidden;
